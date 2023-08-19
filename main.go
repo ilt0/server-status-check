@@ -29,7 +29,7 @@ func getServerStatus() []ServerStatus {
 	cmd = exec.Command("bash", "-c", "cat /proc/meminfo")
 	memoryUsageOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "netstat -i")
+	cmd = exec.Command("bash", "-c", "cat /proc/net/dev")
 	networkStatusOutput, _ := cmd.CombinedOutput()
 
 	cmd = exec.Command("cmd", "/c", "cat /proc/version")
