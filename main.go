@@ -17,7 +17,7 @@ type ServerStatus struct {
 }
 
 func getServerStatus() []ServerStatus {
-	cmd := exec.Command("bash", "-c", "uptime")
+	cmd := exec.Command("bash", "-c", "cat /proc/uptime")
 	uptimeOutput, _ := cmd.CombinedOutput()
 
 	cmd = exec.Command("bash", "-c", "cat /proc/loadavg")
@@ -29,10 +29,10 @@ func getServerStatus() []ServerStatus {
 	cmd = exec.Command("bash", "-c", "cat /proc/meminfo")
 	memoryUsageOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "ip link show")
+	cmd = exec.Command("bash", "-c", "netstat -i")
 	networkStatusOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("cmd", "/c", "uname -a")
+	cmd = exec.Command("cmd", "/c", "cat /proc/version")
 	systemStatusOutput, _ := cmd.CombinedOutput()
 
 	statusData := []ServerStatus{
