@@ -26,13 +26,13 @@ func getServerStatus() []ServerStatus {
 	cmd = exec.Command("bash", "-c", "df -h /")
 	diskUsageOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "free -h")
+	cmd = exec.Command("bash", "-c", "cat /proc/meminfo")
 	memoryUsageOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "ifconfig eth0")
+	cmd = exec.Command("bash", "-c", "ip link show")
 	networkStatusOutput, _ := cmd.CombinedOutput()
 
-	cmd = exec.Command("cmd", "/c", "systeminfo")
+	cmd = exec.Command("cmd", "/c", "uname -a")
 	systemStatusOutput, _ := cmd.CombinedOutput()
 
 	statusData := []ServerStatus{
