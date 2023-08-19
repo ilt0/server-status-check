@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"net/http"
 	"os/exec"
+	"runtime"
 )
 
 type StatusData struct {
@@ -17,20 +18,42 @@ type ServerStatus struct {
 }
 
 func getServerStatus() []ServerStatus {
-	cmd := exec.Command("bash", "-c", "uptime")
-	uptimeOutput, _ := cmd.CombinedOutput()
+	var uptimeOutput, loadAvgOutput, diskUsageOutput, memoryUsageOutput, networkStatusOutput []byte
 
-	cmd = exec.Command("bash", "-c", "cat /proc/loadavg")
-	loadAvgOutput, _ := cmd.CombinedOutput()
+	if runtime.GOOS == "windows" {
+		cmd := exec.Command("cmd", "/c", "systeminfo")
+		uptimeOutput, _ = cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "df -h /")
-	diskUsageOutput, _ := cmd.CombinedOutput()
+		cmd = exec.Command("cmd", "/c", "typeperf \"\\Processor(_Total)\\% Processor Time\" -sc 1")
+		loadAvgOutput, _ = cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "free -h")
-	memoryUsageOutput, _ := cmd.CombinedOutput()
+		cmd = exec.Command("cmd", "/c", "wmic logicaldisk where Caption=\"C:\" get Size, FreeSpace, FileSystem")
+		diskUsageOutput, _ = cmd.CombinedOutput()
 
-	cmd = exec.Command("bash", "-c", "ifconfig eth0")
-	networkStatusOutput, _ := cmd.CombinedOutput()
+		cmd = exec.Command("cmd", "/c", "systeminfo | find \"Total Physical Memory\"")
+		cmd.Stdin = nil
+		cmd.Stdout = nil
+		memoryUsageOutput, _ = cmd.CombinedOutput()
+
+		cmd = exec.Command("cmd", "/c", "ipconfig")
+		networkStatusOutput, _ = cmd.CombinedOutput()
+	} else if runtime.GOOS == "linux" {
+		cmd := exec.Command("bash", "-c", "uptime")
+		uptimeOutput, _ = cmd.CombinedOutput()
+
+		cmd = exec.Command("bash", "-c", "cat /proc/loadavg")
+		loadAvgOutput, _ = cmd.CombinedOutput()
+
+		cmd = exec.Command("bash", "-c", "df -h /")
+		diskUsageOutput, _ = cmd.CombinedOutput()
+
+		cmd = exec.Command("bash", "-c", "free -h")
+		memoryUsageOutput, _ = cmd.CombinedOutput()
+
+		cmd = exec.Command("bash", "-c", "ifconfig")
+		networkStatusOutput, _ = cmd.CombinedOutput()
+	}
+
 
 	statusData := []ServerStatus{
 		{Title: "System Uptime", Content: string(uptimeOutput)},
@@ -68,13 +91,10 @@ func main() {
 		http.ServeFile(w, r, "index.html")
 	})
 
-
 	fmt.Println("Starting HTTP server on port 8080...")
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("HTTP server error:", err)
 	}
-	
 
-	
 }
