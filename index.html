@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Server Status Check</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <h1 class="mt-5">💻🌐📡💽 Server Status Check💻🌐📡💽</h1>
+        <button class="btn btn-primary mt-4" id="status-button">Check Server Status</button>
+    </div>
+
+    <script>
+        document.getElementById("status-button").addEventListener("click", function() {
+            window.location.href = "/Server-status-check";
+        });
+    </script>
+</body>
+</html>
